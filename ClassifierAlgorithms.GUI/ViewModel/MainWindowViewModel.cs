@@ -13,7 +13,8 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase, IDataErrorInfo
     {
-        private const string ScatterSeriesTag = "ScatterSeries";
+        private const string ScatterSerieTag = "ScatterSeries";
+        private const string LineSerieTag = "LineSeries";
 
         public MainWindowViewModel()
         {
@@ -30,7 +31,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
             plotModel.Series.Add(new ScatterSeries
                                  {
-                                     Tag = ScatterSeriesTag,
+                                     Tag = ScatterSerieTag,
                                      MarkerType = MarkerType.Cross,
                                      MarkerSize = 2,
                                      MarkerFill = OxyColors.Transparent,
@@ -39,7 +40,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                  });
             plotModel.Series.Add(new LineSeries
                                  {
-                                     Tag = ScatterSeriesTag,
+                                     Tag = LineSerieTag,
                                      MarkerType = MarkerType.None
                                  });
 
