@@ -36,26 +36,38 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         private async Task OnGeneratePoints()
         {
             await Task.Run(() =>
-                            {
-                               const int countOfPoints = 500;
+                           {
+                               const int countOfPoints = 1000;
                                var random = new Random();
 
-                               ScatterSeries.Points.Clear();
-                               for (var i = 0; i < countOfPoints; i++)
+                               if (ScatterSeries.Points.Count != 0)
                                {
-                                   var newPoint = new ScatterPoint(random.NextGaussian(FirstClassExpectation, FirstClassDispersion),
-                                                                   random.NextGaussian(FirstClassExpectation, FirstClassDispersion));
-                                   ScatterSeries.Points.Add(newPoint);
+                                   ScatterSeries.Points.Clear();
                                }
 
-                               for (var i = 0; i < countOfPoints; i++)
-                               {
-                                   var newPoint = new ScatterPoint(random.NextGaussian(SecondClassExpectation, SecondClassDispersion),
-                                                                   random.NextGaussian(SecondClassExpectation, SecondClassDispersion));
-                                   ScatterSeries.Points.Add(newPoint);
-                               }
+                               var firstPointsFillTask = Task.Run(() =>
+                                                                  {
+                                                                      for (var i = 0; i < countOfPoints; i++)
+                                                                      {
+                                                                          var newPoint = new ScatterPoint(random.NextGaussian(FirstClassExpectation, FirstClassDispersion),
+                                                                                                          random.NextGaussian(FirstClassExpectation, FirstClassDispersion));
+                                                                          ScatterSeries.Points.Add(newPoint);
+                                                                      }
+                                                                  });
+
+                               var secondPointsFillTask = Task.Run(() =>
+                                                                   {
+                                                                       for (var i = 0; i < countOfPoints; i++)
+                                                                       {
+                                                                           var newPoint = new ScatterPoint(random.NextGaussian(SecondClassExpectation, SecondClassDispersion),
+                                                                                                           random.NextGaussian(SecondClassExpectation, SecondClassDispersion));
+                                                                           ScatterSeries.Points.Add(newPoint);
+                                                                       }
+                                                                   });
+
+                               Task.WaitAll(firstPointsFillTask, secondPointsFillTask);
+                               PlotModel.InvalidatePlot(true);
                            });
-            PlotModel.InvalidatePlot(true);
         }
 
         private ScatterSeries ScatterSeries { get; set; }
