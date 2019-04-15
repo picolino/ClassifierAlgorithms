@@ -3,6 +3,8 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using ClassifierAlgorithms.Core;
+using ClassifierAlgorithms.Core.Domain;
 using ClassifierAlgorithms.Core.Extensions;
 using DevExpress.Mvvm;
 using OxyPlot;
@@ -15,9 +17,6 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private const string ScatterSeriesTag = "ScatterSeries";
-        private const string LineSeriesTag = "LineSeries";
-
         public AsyncCommand GeneratePointsCommand { get; }
         public AsyncCommand ClassifyCommand { get; }
 
@@ -35,6 +34,9 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             ClassifyCommand = new AsyncCommand(OnClassify, CanClassify);
         }
 
+        private Class FirstClass { get; set; }
+        private Class SecondClass { get; set; }
+
         private bool CanClassify()
         {
             return false;
@@ -50,38 +52,45 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             await Task.Run(() =>
                            {
                                const int countOfPoints = 1000;
-                               var random = new Random();
 
                                if (ScatterSeries.Points.Count != 0)
                                {
                                    ScatterSeries.Points.Clear();
                                }
 
-                               var firstPointsFillTask = Task.Run(() =>
-                                                                  {
-                                                                      for (var i = 0; i < countOfPoints; i++)
-                                                                      {
-                                                                          var newPoint = new ScatterPoint(random.NextGaussian(FirstClassExpectation, FirstClassDispersion),
-                                                                                                          random.NextGaussian(FirstClassExpectation, FirstClassDispersion));
-                                                                          ScatterSeries.Points.Add(newPoint);
-                                                                      }
-                                                                  });
+                               var generator = new Generator();
 
-                               var secondPointsFillTask = Task.Run(() =>
-                                                                   {
-                                                                       for (var i = 0; i < countOfPoints; i++)
-                                                                       {
-                                                                           var newPoint = new ScatterPoint(random.NextGaussian(SecondClassExpectation, SecondClassDispersion),
-                                                                                                           random.NextGaussian(SecondClassExpectation, SecondClassDispersion));
-                                                                           ScatterSeries.Points.Add(newPoint);
-                                                                       }
-                                                                   });
+                               var firstClassGenerateTask = Task.Run(() =>
+                                                                     {
+                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectation, FirstClassDispersion);
+                                                                         for (var i = 0; i < countOfPoints; i++)
+                                                                         {
+                                                                             var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
+                                                                                                             FirstClass.Vector[i, 1]);
+                                                                             ScatterSeries.Points.Add(newPoint);
+                                                                         }
+                                                                     });
 
-                               Task.WaitAll(firstPointsFillTask, secondPointsFillTask);
+                               var secondClassGenerateTask = Task.Run(() =>
+                                                                     {
+                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectation, SecondClassDispersion);
+                                                                         for (var i = 0; i < countOfPoints; i++)
+                                                                         {
+                                                                             var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
+                                                                                                             SecondClass.Vector[i, 1]);
+                                                                             ScatterSeries.Points.Add(newPoint);
+                                                                         }
+                                                                     });
+
+                               Task.WaitAll(firstClassGenerateTask, secondClassGenerateTask);
                                PlotModel.InvalidatePlot(true);
                            });
         }
 
+        #region Plot
+        
+        private const string ScatterSeriesTag = "ScatterSeries";
+        private const string LineSeriesTag = "LineSeries";
         private ScatterSeries ScatterSeries { get; set; }
         private LineSeries LineSeries { get; set; }
 
@@ -112,5 +121,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
             return plotModel;
         }
+
+        #endregion
     }
 }
