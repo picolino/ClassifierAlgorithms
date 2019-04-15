@@ -138,7 +138,7 @@
                         Content="Построить графики" 
                         IsEnabled="{Binding ElementName=ValidationErrorsHostBehavior, Path=HasErrors, Converter={dxmvvm:BooleanNegationConverter}}"
                         Command="{Binding GeneratePointsCommand}"/>
-                <Button Grid.Row="2" Grid.Column="0" Content="Классифицировать"/>
+                <Button Grid.Row="2" Grid.Column="0" Content="Классифицировать" Command="{Binding ClassifyCommand}"/>
             </Grid>
         </Grid>
 
