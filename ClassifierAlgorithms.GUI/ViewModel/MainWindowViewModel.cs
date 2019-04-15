@@ -13,12 +13,13 @@ using OxyPlot.Series;
 
 namespace ClassifierAlgorithms.GUI.ViewModel
 {
-    public partial class MainWindowViewModel : ViewModelBase, IDataErrorInfo
+    public partial class MainWindowViewModel : ViewModelBase
     {
         private const string ScatterSeriesTag = "ScatterSeries";
         private const string LineSeriesTag = "LineSeries";
 
         public AsyncCommand GeneratePointsCommand { get; }
+        public AsyncCommand ClassifyCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -31,6 +32,17 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             SecondClassDispersion = 0.05;
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
+            ClassifyCommand = new AsyncCommand(OnClassify, CanClassify);
+        }
+
+        private bool CanClassify()
+        {
+            return false;
+        }
+
+        private async Task OnClassify()
+        {
+            throw new NotImplementedException();
         }
 
         private async Task OnGeneratePoints()
