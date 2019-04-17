@@ -29,7 +29,7 @@ namespace ClassifierAlgorithms.Core
         private double BayesFunction(double x, double y, Class data)
         {
             (1 / (Math.Pow(2 * Math.PI, 1 / 2d) * (Math.Pow(matrixService.GetDeterminant(covariationMatrix), 1 / 2d))))
-                * Math.Exp(-0.5 * ((x - firstClass.Expectation) / (/*Ei(x-ui)*/)));
+                * Math.Exp(-0.5 * ((x - data.Expectation) / (/*Ei(x-ui)*/)));
         }
 
         //TODO:
