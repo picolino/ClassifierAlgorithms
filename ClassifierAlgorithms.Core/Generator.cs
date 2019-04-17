@@ -21,7 +21,7 @@ namespace ClassifierAlgorithms.Core
                 vector[i, 0] = random.NextGaussian(expectation, dispersion);
                 vector[i, 1] = random.NextGaussian(expectation, dispersion);
             }
-            return new Class(vector);
+            return new Class(vector, expectation, dispersion);
         }
     }
 }

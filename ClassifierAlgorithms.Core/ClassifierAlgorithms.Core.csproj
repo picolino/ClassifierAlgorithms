@@ -44,7 +44,10 @@
     <Compile Include="Domain\Class.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="Line.cs" />
+    <Compile Include="NaiveBayesClassifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SupportVectorClassifier.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
