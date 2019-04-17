@@ -22,14 +22,14 @@ namespace ClassifierAlgorithms.Core
 
         public void Calculate(double x, double y)
         {
-            var probabilityX = BayesFunction(x, y, firstClass);
-            var probabilityY = BayesFunction(x, y, secondClass);
+            var probabilityX = BayesFunction(x, firstClass);
+            var probabilityY = BayesFunction(y, secondClass);
         }
 
-        private double BayesFunction(double x, double y, Class data)
+        private double BayesFunction(double value, Class data)
         {
-            (1 / (Math.Pow(2 * Math.PI, 1 / 2d) * (Math.Pow(matrixService.GetDeterminant(covariationMatrix), 1 / 2d))))
-                * Math.Exp(-0.5 * ((x - data.Expectation) / (/*Ei(x-ui)*/)));
+            return (1 / (Math.Pow(2 * Math.PI, 1 / 2d) * (Math.Pow(matrixService.GetDeterminant(covariationMatrix), 1 / 2d))))
+                    * Math.Exp(-0.5 * ((value - data.Expectation) / (/*Ei(x-ui)*/)));
         }
 
         //TODO:
