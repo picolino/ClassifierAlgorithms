@@ -30,6 +30,9 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             SecondClassExpectation = 0.7;
             SecondClassDispersion = 0.05;
 
+            FirstClassDependency = 0;
+            SecondClassDependency = 0;
+
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyCommand = new AsyncCommand(OnClassify, CanClassify);
         }

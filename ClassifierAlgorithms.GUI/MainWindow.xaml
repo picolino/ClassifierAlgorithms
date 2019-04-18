@@ -65,6 +65,8 @@
                         <RowDefinition/>
                         <RowDefinition Height="5"/>
                         <RowDefinition/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0" Content="Математическое ожидание:"/>
@@ -88,6 +90,17 @@
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
+
+                    <Label Grid.Row="4" Grid.Column="0" Content="Ковариация к вектору два:"/>
+                    <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" TextWrapping="NoWrap" AcceptsReturn="False">
+                        <TextBox.Text>
+                            <Binding Path="FirstClassDependency" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" NotifyOnValidationError="True" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
                 </Grid>
             </GroupBox>
 
@@ -99,6 +112,8 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="5"/>
                         <RowDefinition/>
                         <RowDefinition Height="5"/>
                         <RowDefinition/>
@@ -119,6 +134,17 @@
                     <TextBox Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Center" TextWrapping="NoWrap" AcceptsReturn="False">
                         <TextBox.Text>
                             <Binding Path="SecondClassDispersion" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" NotifyOnValidationError="True" ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
+                    <Label Grid.Row="4" Grid.Column="0" Content="Ковариация к вектору один:"/>
+                    <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" TextWrapping="NoWrap" AcceptsReturn="False">
+                        <TextBox.Text>
+                            <Binding Path="SecondClassDependency" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" NotifyOnValidationError="True" ValidatesOnDataErrors="True">
                                 <Binding.ValidationRules>
                                     <DataErrorValidationRule/>
                                 </Binding.ValidationRules>
