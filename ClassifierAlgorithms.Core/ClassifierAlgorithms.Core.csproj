@@ -48,6 +48,7 @@
     <Compile Include="BayesClassifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\MatrixService.cs" />
+    <Compile Include="Services\ProbabilityService.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

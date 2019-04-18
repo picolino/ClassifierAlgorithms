@@ -8,25 +8,31 @@ namespace ClassifierAlgorithms.Core
     {
         private readonly Class firstClass;
         private readonly Class secondClass;
-        private readonly double[,] covariationMatrix;
         private readonly MatrixService matrixService;
+        private readonly ProbabilityService probabilityService;
 
-        public BayesClassifier(Class firstClass, Class secondClass, double[,] covariationMatrix)
+        public BayesClassifier(Class firstClass, Class secondClass)
         {
             this.firstClass = firstClass;
             this.secondClass = secondClass;
-            this.covariationMatrix = covariationMatrix;
 
             matrixService = new MatrixService();
+            probabilityService = new ProbabilityService();
         }
 
-        public void Calculate(double x, double y)
+        public Class Calculate(double x, double y)
         {
-            var covariationMatrixDeterminant = matrixService.GetDeterminant(covariationMatrix);
-            var probabilityX = (1 / (Math.Pow(2 * Math.PI, 1 / 2d) * (Math.Pow(covariationMatrixDeterminant, 1 / 2d))))
-                               * Math.Exp(-0.5 * ((x - firstClass.Expectation) / (/*Ei(x-ui)*/)));
-            var probabilityY = (1 / (Math.Pow(2 * Math.PI, 1 / 2d) * (Math.Pow(covariationMatrixDeterminant, 1 / 2d))))
-                               * Math.Exp(-0.5 * ((y - secondClass.Expectation) / (/*Ei(y-ui)*/)));
+            var allPoints = firstClass.Vector.GetLength(0) + secondClass.Vector.GetLength(0);
+            var firstClassProbabilityX = probabilityService.CalculateAnalogProbability(x, firstClass.Expectation, firstClass.Dispersion) * (firstClass.Vector.GetLength(0) / (double)allPoints);
+            var firstClassProbabilityY = probabilityService.CalculateAnalogProbability(y, firstClass.Expectation, firstClass.Dispersion) * (firstClass.Vector.GetLength(0) / (double)allPoints);
+
+            
+            var secondClassProbabilityX = probabilityService.CalculateAnalogProbability(x, secondClass.Expectation, secondClass.Dispersion) * (secondClass.Vector.GetLength(0) / (double)allPoints);
+            var secondClassProbabilityY = probabilityService.CalculateAnalogProbability(y, secondClass.Expectation, secondClass.Dispersion) * (secondClass.Vector.GetLength(0) / (double)allPoints);
+
+            return firstClassProbabilityX * firstClassProbabilityY > secondClassProbabilityX * secondClassProbabilityY
+                       ? firstClass
+                       : secondClass;
         }
 
         //TODO:

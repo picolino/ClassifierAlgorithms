@@ -24,10 +24,10 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         {
             PlotModel = InitializePlot(0, 1);
             
-            FirstClassExpectation = 0.7;
+            FirstClassExpectation = 0.3;
             FirstClassDispersion = 0.05;
 
-            SecondClassExpectation = 0.3;
+            SecondClassExpectation = 0.7;
             SecondClassDispersion = 0.05;
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
@@ -39,12 +39,14 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
         private bool CanClassify()
         {
-            return false;
+            return true;
         }
 
         private async Task OnClassify()
         {
-            throw new NotImplementedException();
+            var bayes = new BayesClassifier(FirstClass, SecondClass);
+            var r1 = bayes.Calculate(0.1, 0.1);
+            var r2 = bayes.Calculate(0.7, 0.7);
         }
 
         private async Task OnGeneratePoints()
