@@ -60,9 +60,14 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                            {
                                const int countOfPoints = 1000;
 
-                               if (ScatterSeries.Points.Count != 0)
+                               if (FirstClassScatterSeries.Points.Count != 0)
                                {
-                                   ScatterSeries.Points.Clear();
+                                   FirstClassScatterSeries.Points.Clear();
+                               }
+
+                               if (SecondClassScatterSeries.Points.Count != 0)
+                               {
+                                   SecondClassScatterSeries.Points.Clear();
                                }
 
                                var generator = new Generator();
@@ -75,7 +80,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                                                          {
                                                                              var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
                                                                                                              FirstClass.Vector[i, 1]);
-                                                                             ScatterSeries.Points.Add(newPoint);
+                                                                             FirstClassScatterSeries.Points.Add(newPoint);
                                                                          }
                                                                      });
 
@@ -87,7 +92,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                                                          {
                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
                                                                                                              SecondClass.Vector[i, 1]);
-                                                                             ScatterSeries.Points.Add(newPoint);
+                                                                             SecondClassScatterSeries.Points.Add(newPoint);
                                                                          }
                                                                      });
 
@@ -98,9 +103,11 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
         #region Plot
         
-        private const string ScatterSeriesTag = "ScatterSeries";
+        private const string FirstClassScatterSeriesTag = "FirstClassScatterSeries";
+        private const string SecondClassScatterSeriesTag = "SecondClassScatterSeries";
         private const string LineSeriesTag = "LineSeries";
-        private ScatterSeries ScatterSeries { get; set; }
+        private ScatterSeries FirstClassScatterSeries { get; set; }
+        private ScatterSeries SecondClassScatterSeries { get; set; }
         private LineSeries LineSeries { get; set; }
 
         private PlotModel InitializePlot(int min, int max)
@@ -110,22 +117,32 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             plotModel.Axes.Add(new LinearAxis {Position = AxisPosition.Left, Maximum = max, Minimum = min});
             plotModel.Axes.Add(new LinearAxis {Position = AxisPosition.Bottom, Maximum = max, Minimum = min});
 
-            ScatterSeries = new ScatterSeries
+            FirstClassScatterSeries = new ScatterSeries
                             {
-                                Tag = ScatterSeriesTag,
+                                Tag = FirstClassScatterSeriesTag,
                                 MarkerType = MarkerType.Cross,
                                 MarkerSize = 2,
                                 MarkerFill = OxyColors.Transparent,
                                 MarkerStrokeThickness = 1,
                                 MarkerStroke = OxyColors.DarkBlue
                             };
+            SecondClassScatterSeries = new ScatterSeries
+                                      {
+                                          Tag = SecondClassScatterSeriesTag,
+                                          MarkerType = MarkerType.Cross,
+                                          MarkerSize = 2,
+                                          MarkerFill = OxyColors.Transparent,
+                                          MarkerStrokeThickness = 1,
+                                          MarkerStroke = OxyColors.DarkOrange
+                                      };
             LineSeries = new LineSeries
                          {
                              Tag = LineSeriesTag,
                              MarkerType = MarkerType.None
                          };
 
-            plotModel.Series.Add(ScatterSeries);
+            plotModel.Series.Add(FirstClassScatterSeries);
+            plotModel.Series.Add(SecondClassScatterSeries);
             plotModel.Series.Add(LineSeries);
 
             return plotModel;
