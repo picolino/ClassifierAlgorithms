@@ -84,7 +84,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         {
             await Task.Run(() =>
                            {
-                               const int countOfPoints = 1000;
+                               const int countOfPoints = 500;
 
                                if (FirstClassScatterSeries.Points.Count != 0)
                                {
