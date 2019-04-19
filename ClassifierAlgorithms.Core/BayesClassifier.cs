@@ -39,12 +39,12 @@ namespace ClassifierAlgorithms.Core
                        : secondClass;
         }
 
-        public Class ClassifyByCorrelation(double x, double y)
+        public Class ClassifyByCorrelation(double x, double y, double dependencyX, double dependencyY)
         {
             var correlationArray = new [,]
                              {
-                                 {firstClass.Dispersion, 0.3},
-                                 {0, secondClass.Dispersion}
+                                 {firstClass.Dispersion, dependencyX},
+                                 {dependencyY, secondClass.Dispersion}
                              };
             var correlation = new Matrix(correlationArray);
             var parameters = new Vector(new [,] {{x, y}});

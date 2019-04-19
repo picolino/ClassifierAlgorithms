@@ -10,6 +10,10 @@ using DevExpress.Mvvm;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using OxyPlot.Wpf;
+using LinearAxis = OxyPlot.Axes.LinearAxis;
+using LineSeries = OxyPlot.Series.LineSeries;
+using ScatterSeries = OxyPlot.Series.ScatterSeries;
 
 #endregion
 
@@ -17,12 +21,15 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        private Random random;
+
         public AsyncCommand GeneratePointsCommand { get; }
-        public AsyncCommand ClassifyCommand { get; }
+        public AsyncCommand ClassifyRandomPointCommand { get; }
 
         public MainWindowViewModel()
         {
             PlotModel = InitializePlot(0, 1);
+            random = new Random();
             
             FirstClassExpectation = 0.3;
             FirstClassDispersion = 0.05;
@@ -34,7 +41,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             SecondClassDependency = 0;
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
-            ClassifyCommand = new AsyncCommand(OnClassify, CanClassify);
+            ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
         }
 
         private Class FirstClass { get; set; }
@@ -42,16 +49,35 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
         private bool CanClassify()
         {
-            return true;
+            return FirstClass != null && SecondClass != null;
         }
 
-        private async Task OnClassify()
+        private async Task OnClassifyRandomPoints()
         {
-            var bayes = new BayesClassifier(FirstClass, SecondClass);
-            var r1 = bayes.Classify(0.1, 0.1);
-            var r2 = bayes.Classify(0.7, 0.7);
+            await Task.Run(() =>
+                           {
+                               for (var i = 0; i < 5000; i++)
+                               {
+                                   var bayes = new BayesClassifier(FirstClass, SecondClass);
 
-            bayes.ClassifyByCorrelation(0.5, 0.4);
+                                   var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
+                                   var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
+            
+                                   //var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, FirstClass.Dependency, SecondClass.Dependency);
+                                   var result = bayes.Classify(randomPointX, randomPointY);
+
+                                   if (result == FirstClass)
+                                   {
+                                       FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                   }
+                                   else
+                                   {
+                                       SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                   }
+
+                                   PlotModel.InvalidatePlot(true);
+                               }
+                           });
         }
 
         private async Task OnGeneratePoints()

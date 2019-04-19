@@ -7,7 +7,7 @@
         xmlns:viewModel="clr-namespace:ClassifierAlgorithms.GUI.ViewModel"
         xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Title="Байесовский классификатор" Height="450" Width="600">
+        Title="Байесовский классификатор" Height="700" Width="600">
     <Window.DataContext>
         <viewModel:MainWindowViewModel/>
     </Window.DataContext>
@@ -91,7 +91,7 @@
                         </TextBox.Text>
                     </TextBox>
 
-                    <Label Grid.Row="4" Grid.Column="0" Content="Ковариация к вектору два:"/>
+                    <!--<Label Grid.Row="4" Grid.Column="0" Content="Корреляция к вектору два:"/>
                     <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" TextWrapping="NoWrap" AcceptsReturn="False">
                         <TextBox.Text>
                             <Binding Path="FirstClassDependency" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" NotifyOnValidationError="True" ValidatesOnDataErrors="True">
@@ -100,7 +100,7 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
-                    </TextBox>
+                    </TextBox>-->
                 </Grid>
             </GroupBox>
 
@@ -141,7 +141,7 @@
                         </TextBox.Text>
                     </TextBox>
 
-                    <Label Grid.Row="4" Grid.Column="0" Content="Ковариация к вектору один:"/>
+                    <!--<Label Grid.Row="4" Grid.Column="0" Content="Корреляция к вектору один:"/>
                     <TextBox Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" TextWrapping="NoWrap" AcceptsReturn="False">
                         <TextBox.Text>
                             <Binding Path="SecondClassDependency" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" NotifyOnValidationError="True" ValidatesOnDataErrors="True">
@@ -150,7 +150,7 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
-                    </TextBox>
+                    </TextBox>-->
                 </Grid>
             </GroupBox>
 
@@ -164,7 +164,7 @@
                         Content="Построить графики" 
                         IsEnabled="{Binding ElementName=ValidationErrorsHostBehavior, Path=HasErrors, Converter={dxmvvm:BooleanNegationConverter}}"
                         Command="{Binding GeneratePointsCommand}"/>
-                <Button Grid.Row="2" Grid.Column="0" Content="Классифицировать" Command="{Binding ClassifyCommand}"/>
+                <Button Grid.Row="2" Grid.Column="0" Content="Классифицировать случайные точки" Command="{Binding ClassifyRandomPointCommand}"/>
             </Grid>
         </Grid>
 
