@@ -48,8 +48,10 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         private async Task OnClassify()
         {
             var bayes = new BayesClassifier(FirstClass, SecondClass);
-            var r1 = bayes.Calculate(0.1, 0.1);
-            var r2 = bayes.Calculate(0.7, 0.7);
+            var r1 = bayes.Classify(0.1, 0.1);
+            var r2 = bayes.Classify(0.7, 0.7);
+
+            bayes.ClassifyByCorrelation(0.5, 0.4);
         }
 
         private async Task OnGeneratePoints()
@@ -68,6 +70,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                var firstClassGenerateTask = Task.Run(() =>
                                                                      {
                                                                          FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectation, FirstClassDispersion);
+                                                                         FirstClass.Dependency = FirstClassDependency;
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
@@ -79,6 +82,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                var secondClassGenerateTask = Task.Run(() =>
                                                                      {
                                                                          SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectation, SecondClassDispersion);
+                                                                         FirstClass.Dependency = SecondClassDependency;
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],

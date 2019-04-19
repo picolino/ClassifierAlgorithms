@@ -15,6 +15,7 @@ namespace ClassifierAlgorithms.Core.Domain
         public double[,] Vector { get; }
         public double Expectation { get; }
         public double Dispersion { get; }
+        public double Dependency { get; set; }
         public string Id { get; }
     }
 }
