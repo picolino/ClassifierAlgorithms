@@ -76,8 +76,8 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                    var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
                                    var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                                   //var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, correlationMatrix);
-                                   var result = bayes.Classify(randomPointX, randomPointY);
+                                   var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, new Matrix(correlationMatrix));
+                                   //var result = bayes.Classify(randomPointX, randomPointY);
 
                                    if (result == FirstClass)
                                    {
