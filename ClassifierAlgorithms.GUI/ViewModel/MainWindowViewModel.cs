@@ -2,6 +2,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using ClassifierAlgorithms.Core;
 using ClassifierAlgorithms.Core.Domain;
@@ -39,7 +41,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             SecondClassExpectationY = 0.7;
             SecondClassDispersion = 0.05;
 
-            CorrelationMatrixInput = "10\n01";
+            CorrelationMatrixInput = "1 0\n0 1";
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
@@ -57,14 +59,24 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         {
             await Task.Run(() =>
                            {
+                               var bayes = new BayesClassifier(FirstClass, SecondClass);
+                               var stopwatch = new Stopwatch();
+
+                               var correlationMatrixInput = CorrelationMatrixInput.Split('\n', ' ');
+                               var correlationMatrix = new double[2, 2];
+                               correlationMatrix[0, 0] = double.Parse(correlationMatrixInput[0]);
+                               correlationMatrix[0, 1] = double.Parse(correlationMatrixInput[1]);
+                               correlationMatrix[1, 0] = double.Parse(correlationMatrixInput[2]);
+                               correlationMatrix[1, 1] = double.Parse(correlationMatrixInput[3]);
+
+
+                               stopwatch.Start();
                                for (var i = 0; i < 5000; i++)
                                {
-                                   var bayes = new BayesClassifier(FirstClass, SecondClass);
-
                                    var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
                                    var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                                   //var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY);
+                                   //var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, correlationMatrix);
                                    var result = bayes.Classify(randomPointX, randomPointY);
 
                                    if (result == FirstClass)
@@ -76,8 +88,14 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                        SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
                                    }
 
-                                   PlotModel.InvalidatePlot(true);
+                                   if (stopwatch.Elapsed > TimeSpan.FromMilliseconds(100))
+                                   {
+                                       PlotModel.InvalidatePlot(true);
+                                       stopwatch.Restart();
+                                   }
                                }
+
+                               PlotModel.InvalidatePlot(true);
                            });
         }
 

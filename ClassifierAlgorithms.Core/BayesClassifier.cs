@@ -39,9 +39,8 @@ namespace ClassifierAlgorithms.Core
                        : secondClass;
         }
 
-        public Class ClassifyByCorrelation(double x, double y)
+        public Class ClassifyByCorrelation(double x, double y, Matrix correlation)
         {
-            var correlation = GetCorrelationMatrix();
             var parameters = new Vector(new [,] {{x, y}});
 
             var resultFirstClass = probabilityService.CalculateLognProbabilityByCorrelationMatrix(parameters, 
@@ -56,45 +55,6 @@ namespace ClassifierAlgorithms.Core
             return resultFirstClass > resultSecondClass
                        ? firstClass
                        : secondClass;
-        }
-
-        private Matrix GetCorrelationMatrix()
-        {
-            var normalizedVectorFirstClass = new double[firstClass.Vector.GetLength(0), firstClass.Vector.GetLength(1)];
-            for (int i = 0; i < firstClass.Vector.GetLength(0); i++)
-            {
-                normalizedVectorFirstClass[i, 0] = firstClass.Vector[i, 0] - firstClass.DispersionX;
-                normalizedVectorFirstClass[i, 1] = firstClass.Vector[i, 1] - firstClass.DispersionY;
-            }
-
-            var normalizedVectorSecondClass = new double[secondClass.Vector.GetLength(0), secondClass.Vector.GetLength(1)];
-            for (int i = 0; i < secondClass.Vector.GetLength(0); i++)
-            {
-                normalizedVectorSecondClass[i, 0] = secondClass.Vector[i, 0] - secondClass.DispersionX;
-                normalizedVectorSecondClass[i, 1] = secondClass.Vector[i, 1] - secondClass.DispersionY;
-            }
-            
-            var xxAverage = 0d;
-            var xyAverage = 0d;
-            var yyAverage = 0d;
-            for (int i = 0; i < normalizedVectorFirstClass.GetLength(0); i++)
-            {
-                xxAverage += normalizedVectorFirstClass[i, 0] * normalizedVectorFirstClass[i, 0];
-                xyAverage += normalizedVectorFirstClass[i, 1] * normalizedVectorSecondClass[i, 1];
-                yyAverage += normalizedVectorSecondClass[i, 1] * normalizedVectorSecondClass[i, 1];
-            }
-
-            xxAverage /= normalizedVectorFirstClass.GetLength(0);
-            xyAverage /= normalizedVectorFirstClass.GetLength(0);
-            yyAverage /= normalizedVectorFirstClass.GetLength(0);
-
-            var result = new [,]
-                         {
-                             {xxAverage, xyAverage},
-                             {xyAverage, yyAverage }
-                         };
-
-            return new Matrix(result);
         }
     }
 }
