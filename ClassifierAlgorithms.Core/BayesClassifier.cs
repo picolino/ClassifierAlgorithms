@@ -41,18 +41,18 @@ namespace ClassifierAlgorithms.Core
 
         public Class ClassifyByCorrelation(double x, double y, Matrix correlation)
         {
-            var parameters = new Vector(new [,] {{x, y}});
+            var parameters = new Vector(new [,] {{x},{y}});
 
-            var resultFirstClass = probabilityService.CalculateLognProbabilityByCorrelationMatrix(parameters, 
-                                                                                          new Vector(new [,] {{firstClass.ExpectationX, firstClass.ExpectationY}}), 
+            var resultFirstClass = probabilityService.CalculateReverseProbabilityByCorrelationMatrix(parameters, 
+                                                                                          new Vector(new [,] {{firstClass.ExpectationX}, {firstClass.ExpectationY}}), 
                                                                                           correlation, 
                                                                                           firstClassProbability);
-            var resultSecondClass = probabilityService.CalculateLognProbabilityByCorrelationMatrix(parameters, 
-                                                                                          new Vector(new [,] {{secondClass.ExpectationX, secondClass.ExpectationY}}),
+            var resultSecondClass = probabilityService.CalculateReverseProbabilityByCorrelationMatrix(parameters, 
+                                                                                          new Vector(new [,] {{secondClass.ExpectationX}, {secondClass.ExpectationY}}),
                                                                                           correlation, 
                                                                                           secondClassProbability);
 
-            return resultFirstClass > resultSecondClass
+            return resultFirstClass < resultSecondClass
                        ? firstClass
                        : secondClass;
         }

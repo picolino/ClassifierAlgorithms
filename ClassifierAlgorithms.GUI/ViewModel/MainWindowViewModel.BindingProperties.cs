@@ -38,26 +38,26 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             get { return GetProperty<double>(() => SecondClassExpectationY); }
             set { SetProperty(() => SecondClassExpectationY, value); }
         }
-        
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана дисперсия первого параметра")]
-        public double FirstClassDispersion
-        {
-            get { return GetProperty(() => FirstClassDispersion); }
-            set { SetProperty(() => FirstClassDispersion, value); }
-        }
-        
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана дисперсия второго параметра")]
-        public double SecondClassDispersion
-        {
-            get { return GetProperty(() => SecondClassDispersion); }
-            set { SetProperty(() => SecondClassDispersion, value); }
-        }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана зависимость параметров")]
         public string CorrelationMatrixInput
         {
             get { return GetProperty(() => CorrelationMatrixInput); }
             set { SetProperty(() => CorrelationMatrixInput, value); }
+        }
+
+        public double[,] CorrelationMatrix
+        {
+            get
+            {
+                var correlationMatrixInput = CorrelationMatrixInput.Split('\n', ' ');
+                var correlationMatrix = new double[2, 2];
+                correlationMatrix[0, 0] = double.Parse(correlationMatrixInput[0]);
+                correlationMatrix[0, 1] = double.Parse(correlationMatrixInput[1]);
+                correlationMatrix[1, 0] = double.Parse(correlationMatrixInput[2]);
+                correlationMatrix[1, 1] = double.Parse(correlationMatrixInput[3]);
+                return correlationMatrix;
+            }
         }
     }
 }

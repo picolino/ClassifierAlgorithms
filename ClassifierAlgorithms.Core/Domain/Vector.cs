@@ -6,7 +6,7 @@ namespace ClassifierAlgorithms.Core.Domain
     {
         public Vector(double[,] input) : base(input)
         {
-            if (input.GetLength(0) != 1)
+            if (input.GetLength(0) != 1 && input.GetLength(1) != 1)
             {
                 throw new Exception("Вектор должен быть одномерным массивом");
             }

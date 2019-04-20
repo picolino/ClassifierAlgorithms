@@ -35,13 +35,11 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             
             FirstClassExpectationX = 0.3;
             FirstClassExpectationY = 0.3;
-            FirstClassDispersion = 0.05;
 
             SecondClassExpectationX = 0.7;
             SecondClassExpectationY = 0.7;
-            SecondClassDispersion = 0.05;
 
-            CorrelationMatrixInput = "1 0\n0 1";
+            CorrelationMatrixInput = "0,05 0\n0 0,05";
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
@@ -62,12 +60,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                var bayes = new BayesClassifier(FirstClass, SecondClass);
                                var stopwatch = new Stopwatch();
 
-                               var correlationMatrixInput = CorrelationMatrixInput.Split('\n', ' ');
-                               var correlationMatrix = new double[2, 2];
-                               correlationMatrix[0, 0] = double.Parse(correlationMatrixInput[0]);
-                               correlationMatrix[0, 1] = double.Parse(correlationMatrixInput[1]);
-                               correlationMatrix[1, 0] = double.Parse(correlationMatrixInput[2]);
-                               correlationMatrix[1, 1] = double.Parse(correlationMatrixInput[3]);
+                               
 
 
                                stopwatch.Start();
@@ -76,7 +69,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                    var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
                                    var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                                   var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, new Matrix(correlationMatrix));
+                                   var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, new Matrix(CorrelationMatrix));
                                    //var result = bayes.Classify(randomPointX, randomPointY);
 
                                    if (result == FirstClass)
@@ -121,7 +114,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var firstClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, FirstClassDispersion, FirstClassDispersion);
+                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix[0,0], CorrelationMatrix[1,1]);
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
@@ -132,7 +125,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var secondClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, SecondClassDispersion, SecondClassDispersion);
+                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix[0,0], CorrelationMatrix[1,1]);
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
