@@ -13,15 +13,16 @@ namespace ClassifierAlgorithms.Core
             random = new Random();
         }
 
-        public Class GenerateClassByGaussian(int vectorSize, double expectation, double dispersion)
+        public Class GenerateClassByGaussian(int vectorSize, double expectationX, double expectationY, double dispersionX, double dispersionY)
         {
             var vector = new double[vectorSize, 2];
             for (var i = 0; i < vectorSize; i++)
             {
-                vector[i, 0] = random.NextGaussian(expectation, dispersion);
-                vector[i, 1] = random.NextGaussian(expectation, dispersion);
+                vector[i, 0] = random.NextGaussian(expectationX, dispersionX);
+                vector[i, 1] = random.NextGaussian(expectationY, dispersionY);
             }
-            return new Class(vector, expectation, dispersion);
+
+            return new Class(vector, expectationX, expectationY, dispersionX, dispersionY);
         }
     }
 }

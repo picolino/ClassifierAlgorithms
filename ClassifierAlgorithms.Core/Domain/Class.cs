@@ -4,18 +4,21 @@ namespace ClassifierAlgorithms.Core.Domain
 {
     public class Class
     {
-        public Class(double[,] vector, double expectation, double dispersion)
+        public Class(double[,] vector, double expectationX, double expectationY, double dispersionX, double dispersionY)
         {
             Id = Guid.NewGuid().ToString();
             Vector = vector;
-            Expectation = expectation;
-            Dispersion = dispersion;
+            ExpectationX = expectationX;
+            ExpectationY = expectationY;
+            DispersionX = dispersionX;
+            DispersionY = dispersionY;
         }
 
         public double[,] Vector { get; }
-        public double Expectation { get; }
-        public double Dispersion { get; }
-        public double Dependency { get; set; }
+        public double ExpectationX { get; }
+        public double ExpectationY { get; }
+        public double DispersionX { get; }
+        public double DispersionY { get; }
         public string Id { get; }
     }
 }
