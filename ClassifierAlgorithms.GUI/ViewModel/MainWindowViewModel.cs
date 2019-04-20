@@ -31,10 +31,12 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             PlotModel = InitializePlot(0, 1);
             random = new Random();
             
-            FirstClassExpectation = 0.3;
+            FirstClassExpectationX = 0.3;
+            FirstClassExpectationY = 0.3;
             FirstClassDispersion = 0.05;
 
-            SecondClassExpectation = 0.7;
+            SecondClassExpectationX = 0.7;
+            SecondClassExpectationY = 0.7;
             SecondClassDispersion = 0.05;
 
             FirstClassDependency = 0;
@@ -63,8 +65,8 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                    var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
                                    var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                                   var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY);
-                                   //var result = bayes.Classify(randomPointX, randomPointY);
+                                   //var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY);
+                                   var result = bayes.Classify(randomPointX, randomPointY);
 
                                    if (result == FirstClass)
                                    {
@@ -102,7 +104,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var firstClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, 0.5, 0.3, 0.05, 0.001);
+                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, FirstClassDispersion, FirstClassDispersion);
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
@@ -113,7 +115,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var secondClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, 0.5, 0.7, 0.08, 0.05);
+                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, SecondClassDispersion, SecondClassDispersion);
                                                                          for (var i = 0; i < countOfPoints; i++)
                                                                          {
                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],

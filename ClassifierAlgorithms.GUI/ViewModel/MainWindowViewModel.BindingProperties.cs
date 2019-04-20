@@ -12,17 +12,31 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Должно быть указано математическое ожидание первого параметра")]
-        public double FirstClassExpectation
+        public double FirstClassExpectationX
         {
-            get { return GetProperty<double>(() => FirstClassExpectation); }
-            set { SetProperty(() => FirstClassExpectation, value); }
+            get { return GetProperty<double>(() => FirstClassExpectationX); }
+            set { SetProperty(() => FirstClassExpectationX, value); }
+        }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Должно быть указано математическое ожидание первого параметра")]
+        public double FirstClassExpectationY
+        {
+            get { return GetProperty<double>(() => FirstClassExpectationY); }
+            set { SetProperty(() => FirstClassExpectationY, value); }
         }
         
         [Required(AllowEmptyStrings = false, ErrorMessage = "Должно быть указано математическое ожидание второго параметра")]
-        public double SecondClassExpectation
+        public double SecondClassExpectationX
         {
-            get { return GetProperty<double>(() => SecondClassExpectation); }
-            set { SetProperty(() => SecondClassExpectation, value); }
+            get { return GetProperty<double>(() => SecondClassExpectationX); }
+            set { SetProperty(() => SecondClassExpectationX, value); }
+        }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Должно быть указано математическое ожидание второго параметра")]
+        public double SecondClassExpectationY
+        {
+            get { return GetProperty<double>(() => SecondClassExpectationY); }
+            set { SetProperty(() => SecondClassExpectationY, value); }
         }
         
         [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана дисперсия первого параметра")]
