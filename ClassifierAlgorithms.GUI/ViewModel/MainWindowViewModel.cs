@@ -39,8 +39,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             SecondClassExpectationY = 0.7;
             SecondClassDispersion = 0.05;
 
-            FirstClassDependency = 0;
-            SecondClassDependency = 0;
+            CorrelationMatrixInput = "10\n01";
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);

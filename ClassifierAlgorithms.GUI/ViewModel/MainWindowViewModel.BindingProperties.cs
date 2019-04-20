@@ -53,18 +53,11 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             set { SetProperty(() => SecondClassDispersion, value); }
         }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана зависимость первого параметра")]
-        public double FirstClassDependency
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана зависимость параметров")]
+        public string CorrelationMatrixInput
         {
-            get { return GetProperty(() => FirstClassDependency); }
-            set { SetProperty(() => FirstClassDependency, value); }
-        }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Должна быть указана зависимость второго параметра")]
-        public double SecondClassDependency
-        {
-            get { return GetProperty(() => SecondClassDependency); }
-            set { SetProperty(() => SecondClassDependency, value); }
+            get { return GetProperty(() => CorrelationMatrixInput); }
+            set { SetProperty(() => CorrelationMatrixInput, value); }
         }
     }
 }
