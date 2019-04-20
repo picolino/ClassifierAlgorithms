@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using ClassifierAlgorithms.Core;
 using ClassifierAlgorithms.Core.Domain;
 using ClassifierAlgorithms.Core.Extensions;
@@ -57,38 +58,41 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         {
             await Task.Run(() =>
                            {
-                               var bayes = new BayesClassifier(FirstClass, SecondClass);
-                               var stopwatch = new Stopwatch();
-
-                               
-
-
-                               stopwatch.Start();
-                               for (var i = 0; i < 5000; i++)
+                               try
                                {
-                                   var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
-                                   var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
+                                   var bayes = new BayesClassifier(FirstClass, SecondClass);
+                                   var stopwatch = new Stopwatch();
 
-                                   var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, new Matrix(CorrelationMatrix));
-                                   //var result = bayes.Classify(randomPointX, randomPointY);
+                                   stopwatch.Start();
+                                   for (var i = 0; i < 5000; i++)
+                                   {
+                                       var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
+                                       var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                                   if (result == FirstClass)
-                                   {
-                                       FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
-                                   }
-                                   else
-                                   {
-                                       SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                       var result = bayes.ClassifyByCorrelation(randomPointX, randomPointY, new Matrix(CorrelationMatrix));
+
+                                       if (result == FirstClass)
+                                       {
+                                           FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                       }
+                                       else
+                                       {
+                                           SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                       }
+
+                                       if (stopwatch.Elapsed > TimeSpan.FromMilliseconds(100))
+                                       {
+                                           PlotModel.InvalidatePlot(true);
+                                           stopwatch.Restart();
+                                       }
                                    }
 
-                                   if (stopwatch.Elapsed > TimeSpan.FromMilliseconds(100))
-                                   {
-                                       PlotModel.InvalidatePlot(true);
-                                       stopwatch.Restart();
-                                   }
+                                   PlotModel.InvalidatePlot(true);
                                }
-
-                               PlotModel.InvalidatePlot(true);
+                               catch (Exception e)
+                               {
+                                   MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                               }
                            });
         }
 
@@ -114,23 +118,37 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var firstClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix[0,0], CorrelationMatrix[1,1]);
-                                                                         for (var i = 0; i < countOfPoints; i++)
+                                                                         try
                                                                          {
-                                                                             var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
-                                                                                                             FirstClass.Vector[i, 1]);
-                                                                             FirstClassScatterSeries.Points.Add(newPoint);
+                                                                             FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix);
+                                                                             for (var i = 0; i < countOfPoints; i++)
+                                                                             {
+                                                                                 var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
+                                                                                                                 FirstClass.Vector[i, 1]);
+                                                                                 FirstClassScatterSeries.Points.Add(newPoint);
+                                                                             }
+                                                                         }
+                                                                         catch (Exception e)
+                                                                         {
+                                                                             MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                                                          }
                                                                      });
 
                                var secondClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix[0,0], CorrelationMatrix[1,1]);
-                                                                         for (var i = 0; i < countOfPoints; i++)
+                                                                         try
                                                                          {
-                                                                             var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
-                                                                                                             SecondClass.Vector[i, 1]);
-                                                                             SecondClassScatterSeries.Points.Add(newPoint);
+                                                                             SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix);
+                                                                             for (var i = 0; i < countOfPoints; i++)
+                                                                             {
+                                                                                 var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
+                                                                                                                 SecondClass.Vector[i, 1]);
+                                                                                 SecondClassScatterSeries.Points.Add(newPoint);
+                                                                             }
+                                                                         }
+                                                                         catch (Exception e)
+                                                                         {
+                                                                             MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                                                          }
                                                                      });
 
