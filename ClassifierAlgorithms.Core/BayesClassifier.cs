@@ -56,5 +56,13 @@ namespace ClassifierAlgorithms.Core
                        ? firstClass
                        : secondClass;
         }
+
+        //public double[,] GetPointsOnDivideLine(double min, double max, double count = 100, double step = 0.1)
+        //{
+        //    for (int i = 0; i < count; i++)
+        //    {
+                
+        //    }
+        //}
     }
 }

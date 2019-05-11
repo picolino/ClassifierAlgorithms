@@ -1,22 +1,15 @@
 ﻿#region Usings
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using ClassifierAlgorithms.Core;
 using ClassifierAlgorithms.Core.Domain;
-using ClassifierAlgorithms.Core.Extensions;
 using DevExpress.Mvvm;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using OxyPlot.Wpf;
-using LinearAxis = OxyPlot.Axes.LinearAxis;
-using LineSeries = OxyPlot.Series.LineSeries;
-using ScatterSeries = OxyPlot.Series.ScatterSeries;
 
 #endregion
 
@@ -24,7 +17,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private Random random;
+        private readonly Random random;
 
         public AsyncCommand GeneratePointsCommand { get; }
         public AsyncCommand ClassifyRandomPointCommand { get; }
@@ -33,14 +26,14 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         {
             PlotModel = InitializePlot(0, 1);
             random = new Random();
-            
+
             FirstClassExpectationX = 0.3;
             FirstClassExpectationY = 0.3;
 
             SecondClassExpectationX = 0.7;
             SecondClassExpectationY = 0.7;
 
-            CorrelationMatrixInput = "0,05 0\n0 0,05";
+            CorrelationMatrixInput = "0,005 0\n0 0,005";
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
@@ -96,10 +89,11 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                            });
         }
 
-        
 
         private async Task OnGeneratePoints()
         {
+            try
+            {
             await Task.Run(() =>
                            {
                                const int countOfPoints = 500;
@@ -118,47 +112,38 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
                                var firstClassGenerateTask = Task.Run(() =>
                                                                      {
-                                                                         try
+                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix);
+                                                                         for (var i = 0; i < countOfPoints; i++)
                                                                          {
-                                                                             FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix);
-                                                                             for (var i = 0; i < countOfPoints; i++)
-                                                                             {
-                                                                                 var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
-                                                                                                                 FirstClass.Vector[i, 1]);
-                                                                                 FirstClassScatterSeries.Points.Add(newPoint);
-                                                                             }
-                                                                         }
-                                                                         catch (Exception e)
-                                                                         {
-                                                                             MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                                                             var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
+                                                                                                             FirstClass.Vector[i, 1]);
+                                                                             FirstClassScatterSeries.Points.Add(newPoint);
                                                                          }
                                                                      });
 
                                var secondClassGenerateTask = Task.Run(() =>
-                                                                     {
-                                                                         try
-                                                                         {
-                                                                             SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix);
-                                                                             for (var i = 0; i < countOfPoints; i++)
-                                                                             {
-                                                                                 var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
-                                                                                                                 SecondClass.Vector[i, 1]);
-                                                                                 SecondClassScatterSeries.Points.Add(newPoint);
-                                                                             }
-                                                                         }
-                                                                         catch (Exception e)
-                                                                         {
-                                                                             MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                                                         }
-                                                                     });
+                                                                      {
+                                                                          SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix);
+                                                                          for (var i = 0; i < countOfPoints; i++)
+                                                                          {
+                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
+                                                                                                              SecondClass.Vector[i, 1]);
+                                                                              SecondClassScatterSeries.Points.Add(newPoint);
+                                                                          }
+                                                                      });
 
                                Task.WaitAll(firstClassGenerateTask, secondClassGenerateTask);
                                PlotModel.InvalidatePlot(true);
                            });
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.InnerException?.Message ?? e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region Plot
-        
+
         private const string FirstClassScatterSeriesTag = "FirstClassScatterSeries";
         private const string SecondClassScatterSeriesTag = "SecondClassScatterSeries";
         private const string LineSeriesTag = "LineSeries";
@@ -174,23 +159,23 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             plotModel.Axes.Add(new LinearAxis {Position = AxisPosition.Bottom, Maximum = max, Minimum = min});
 
             FirstClassScatterSeries = new ScatterSeries
-                            {
-                                Tag = FirstClassScatterSeriesTag,
-                                MarkerType = MarkerType.Cross,
-                                MarkerSize = 2,
-                                MarkerFill = OxyColors.Transparent,
-                                MarkerStrokeThickness = 1,
-                                MarkerStroke = OxyColors.DarkBlue
-                            };
-            SecondClassScatterSeries = new ScatterSeries
                                       {
-                                          Tag = SecondClassScatterSeriesTag,
+                                          Tag = FirstClassScatterSeriesTag,
                                           MarkerType = MarkerType.Cross,
                                           MarkerSize = 2,
                                           MarkerFill = OxyColors.Transparent,
                                           MarkerStrokeThickness = 1,
-                                          MarkerStroke = OxyColors.DarkOrange
+                                          MarkerStroke = OxyColors.DarkBlue
                                       };
+            SecondClassScatterSeries = new ScatterSeries
+                                       {
+                                           Tag = SecondClassScatterSeriesTag,
+                                           MarkerType = MarkerType.Cross,
+                                           MarkerSize = 2,
+                                           MarkerFill = OxyColors.Transparent,
+                                           MarkerStrokeThickness = 1,
+                                           MarkerStroke = OxyColors.DarkOrange
+                                       };
             LineSeries = new LineSeries
                          {
                              Tag = LineSeriesTag,
