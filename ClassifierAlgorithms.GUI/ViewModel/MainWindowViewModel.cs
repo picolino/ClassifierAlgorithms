@@ -21,6 +21,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
         public AsyncCommand GeneratePointsCommand { get; }
         public AsyncCommand ClassifyRandomPointCommand { get; }
+        public AsyncCommand ClassifyLogisticRegressionCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -37,6 +38,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
             GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
+            ClassifyLogisticRegressionCommand = new AsyncCommand(OnClassifyLogisticRegression, CanClassify);
         }
 
         private Class FirstClass { get; set; }
@@ -89,6 +91,29 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                            });
         }
 
+        private async Task OnClassifyLogisticRegression()
+        {
+            await Task.Run(() =>
+                           {
+                               var logisticRegression = new LogisticRegression(FirstClass, SecondClass);
+
+                               var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
+                               var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
+
+                               var logisticRegressionResult = logisticRegression.Run(new[] {randomPointX, randomPointY});
+
+                               if (logisticRegressionResult > 0.5)
+                               {
+                                   FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                               }
+                               else
+                               {
+                                   SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                               }
+
+                               PlotModel.InvalidatePlot(true);
+                           });
+        }
 
         private async Task OnGeneratePoints()
         {

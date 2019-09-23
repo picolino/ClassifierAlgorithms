@@ -25,20 +25,6 @@ namespace ClassifierAlgorithms.Core
             probabilityService = new ProbabilityService();
         }
 
-        //public Class Classify(double x, double y)
-        //{
-        //    var firstClassProbabilityX = probabilityService.CalculateGaussianProbability(x, firstClass.ExpectationX, firstClass.DispersionX) * (firstClassProbability);
-        //    var firstClassProbabilityY = probabilityService.CalculateGaussianProbability(y, firstClass.ExpectationY, firstClass.DispersionY) * (firstClassProbability);
-
-            
-        //    var secondClassProbabilityX = probabilityService.CalculateGaussianProbability(x, secondClass.ExpectationX, secondClass.DispersionX) * (secondClassProbability);
-        //    var secondClassProbabilityY = probabilityService.CalculateGaussianProbability(y, secondClass.ExpectationY, secondClass.DispersionY) * (secondClassProbability);
-
-        //    return firstClassProbabilityX * firstClassProbabilityY > secondClassProbabilityX * secondClassProbabilityY
-        //               ? firstClass
-        //               : secondClass;
-        //}
-
         public Class ClassifyByCorrelation(double x, double y, Matrix correlation)
         {
             var parameters = new Vector(new [,] {{x},{y}});
@@ -56,13 +42,5 @@ namespace ClassifierAlgorithms.Core
                        ? firstClass
                        : secondClass;
         }
-
-        //public double[,] GetPointsOnDivideLine(double min, double max, double count = 100, double step = 0.1)
-        //{
-        //    for (int i = 0; i < count; i++)
-        //    {
-                
-        //    }
-        //}
     }
 }

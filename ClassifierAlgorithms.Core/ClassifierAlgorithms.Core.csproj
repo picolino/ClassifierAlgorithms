@@ -73,6 +73,7 @@
     <Compile Include="Generator.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="BayesClassifier.cs" />
+    <Compile Include="LogisticRegression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ProbabilityService.cs" />
   </ItemGroup>
