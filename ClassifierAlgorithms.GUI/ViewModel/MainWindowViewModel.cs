@@ -21,7 +21,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         private readonly Random random;
 
         public ICommand GeneratePointsCommand { get; }
-        public ICommand ClassifyRandomPointCommand { get; }
+        public ICommand ClassifyBayesCommand { get; }
         public ICommand ClassifyLogisticRegressionCommand { get; }
 
         public MainWindowViewModel()
@@ -38,7 +38,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             CorrelationMatrixInput = "0,005 0\n0 0,005";
 
             GeneratePointsCommand = new DelegateCommand(OnGeneratePoints);
-            ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
+            ClassifyBayesCommand = new AsyncCommand(OnClassifyBayes, CanClassify);
             ClassifyLogisticRegressionCommand = new DelegateCommand(OnClassifyLogisticRegression, CanClassify);
         }
 
@@ -50,7 +50,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             return FirstClass != null && SecondClass != null;
         }
 
-        private async Task OnClassifyRandomPoints()
+        private async Task OnClassifyBayes()
         {
             await Task.Run(() =>
                            {
