@@ -100,9 +100,9 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
                                var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                               var logisticRegressionResult = logisticRegression.Run(new[] {randomPointX, randomPointY});
+                               var logisticRegressionProbabilityResult = logisticRegression.Run(new[] {randomPointX, randomPointY});
 
-                               if (logisticRegressionResult > 0.5)
+                               if (logisticRegressionProbabilityResult > 0.5)
                                {
                                    FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
                                }

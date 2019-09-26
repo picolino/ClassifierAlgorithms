@@ -46,9 +46,16 @@ namespace ClassifierAlgorithms.Core
             }
         }
 
+        private double CalculateBorderFunction(double x1, double x2)
+        {
+            return zeroCoefficient + firstCoefficient * x1 + secondCoefficient * x2;
+        }
+
         public double Run(double[] input)
         {
-            return LogFunction(zeroCoefficient + firstCoefficient * input[0] + secondCoefficient * input[1]);
+            var borderFunctionResult = CalculateBorderFunction(input[0], input[1]);
+            var chanceDifference = Math.Exp(borderFunctionResult);
+            return chanceDifference / (1 + chanceDifference);
         }
     }
 }
