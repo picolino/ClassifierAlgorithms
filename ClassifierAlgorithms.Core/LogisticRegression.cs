@@ -12,49 +12,58 @@ namespace ClassifierAlgorithms.Core
         private double firstCoefficient = 0.5;
         private double secondCoefficient = 0.5;
 
+        private double trainSpeed = 0.001;
+
         public LogisticRegression(Class firstCLass, Class secondClass)
         {
             this.firstCLass = firstCLass;
             this.secondClass = secondClass;
         }
 
-        private void Train()
+        public void Train()
         {
-            
-        }
+            var averageError = double.MaxValue;
 
-        private double LogFunction(double x)
-        {
-            return 1.0 / (1.0 + Math.Exp(-x));
-        }
-
-        private double LogDerivativeFunction(double x)
-        {
-            var logResult = LogFunction(x);
-            return logResult * (1 - logResult);
-        }
-
-        private double Likehood(double x, double y)
-        {
-            if (y == 1.0)
+            while (Math.Abs(averageError) > 0.000018)
             {
-                return Math.Log(LogFunction(x));
-            }
-            else
-            {
-                return Math.Log(1 - LogFunction(x));
+                averageError = 0d;
+
+                for (var i = 0; i < firstCLass.Vector.GetLength(0); i++)
+                {
+                    var x = firstCLass.Vector[i, 0];
+                    var y = firstCLass.Vector[i, 1];
+
+                    var error = 1 - Classify(x, y);
+                    zeroCoefficient += trainSpeed * error;
+                    firstCoefficient += trainSpeed * error * x;
+                    secondCoefficient += trainSpeed * error * y;
+                    averageError += error;
+                }
+
+                for (var i = 0; i < secondClass.Vector.GetLength(0); i++)
+                {
+                    var x = secondClass.Vector[i, 0];
+                    var y = secondClass.Vector[i, 1];
+
+                    var error = - Classify(x, y);
+                    zeroCoefficient += trainSpeed * error;
+                    firstCoefficient += trainSpeed * error * x;
+                    secondCoefficient += trainSpeed * error * y;
+                    averageError += error;
+                }
+
+                averageError /= firstCLass.Vector.GetLength(0) + secondClass.Vector.GetLength(0);
             }
         }
 
-        private double CalculateBorderFunction(double x1, double x2)
+        private double CalculateBorderFunction(double x, double y)
         {
-            return zeroCoefficient + firstCoefficient * x1 + secondCoefficient * x2;
+            return zeroCoefficient + firstCoefficient * x + secondCoefficient * y;
         }
 
         public double Classify(double x, double y)
         {
-            var borderFunctionResult = CalculateBorderFunction(x, y);
-            var chanceDifference = Math.Exp(borderFunctionResult);
+            var chanceDifference = Math.Exp(CalculateBorderFunction(x, y));
             return chanceDifference / (1 + chanceDifference);
         }
     }

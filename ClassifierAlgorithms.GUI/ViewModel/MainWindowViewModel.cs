@@ -39,7 +39,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
             GeneratePointsCommand = new DelegateCommand(OnGeneratePoints);
             ClassifyBayesCommand = new AsyncCommand(OnClassifyBayes, CanClassify);
-            ClassifyLogisticRegressionCommand = new DelegateCommand(OnClassifyLogisticRegression, CanClassify);
+            ClassifyLogisticRegressionCommand = new AsyncCommand(OnClassifyLogisticRegression, CanClassify);
         }
 
         private Class FirstClass { get; set; }
@@ -92,25 +92,32 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                            });
         }
 
-        private void OnClassifyLogisticRegression()
+        private async Task OnClassifyLogisticRegression()
         {
             try
             {
                 var logisticRegression = new LogisticRegression(FirstClass, SecondClass);
+                logisticRegression.Train();
 
-                var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
-                var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
+                await Task.Run(() =>
+                         {
+                             for (int i = 0; i < 500; i++)
+                             {
+                                 var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
+                                 var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                var logisticRegressionProbabilityResult = logisticRegression.Classify(randomPointX, randomPointY);
+                                 var logisticRegressionProbabilityResult = logisticRegression.Classify(randomPointX, randomPointY);
 
-                if (logisticRegressionProbabilityResult > 0.5)
-                {
-                    FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
-                }
-                else
-                {
-                    SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
-                }
+                                 if (logisticRegressionProbabilityResult > 0.5)
+                                 {
+                                     FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                 }
+                                 else
+                                 {
+                                     SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                                 }
+                             }
+                         });
 
                 PlotModel.InvalidatePlot(true);
             }
