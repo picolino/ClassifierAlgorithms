@@ -51,9 +51,9 @@ namespace ClassifierAlgorithms.Core
             return zeroCoefficient + firstCoefficient * x1 + secondCoefficient * x2;
         }
 
-        public double Run(double[] input)
+        public double Classify(double x, double y)
         {
-            var borderFunctionResult = CalculateBorderFunction(input[0], input[1]);
+            var borderFunctionResult = CalculateBorderFunction(x, y);
             var chanceDifference = Math.Exp(borderFunctionResult);
             return chanceDifference / (1 + chanceDifference);
         }
