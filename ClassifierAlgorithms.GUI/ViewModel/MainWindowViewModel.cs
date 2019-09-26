@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using ClassifierAlgorithms.Core;
 using ClassifierAlgorithms.Core.Domain;
 using DevExpress.Mvvm;
@@ -19,9 +20,9 @@ namespace ClassifierAlgorithms.GUI.ViewModel
     {
         private readonly Random random;
 
-        public AsyncCommand GeneratePointsCommand { get; }
-        public AsyncCommand ClassifyRandomPointCommand { get; }
-        public AsyncCommand ClassifyLogisticRegressionCommand { get; }
+        public ICommand GeneratePointsCommand { get; }
+        public ICommand ClassifyRandomPointCommand { get; }
+        public ICommand ClassifyLogisticRegressionCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -36,9 +37,9 @@ namespace ClassifierAlgorithms.GUI.ViewModel
 
             CorrelationMatrixInput = "0,005 0\n0 0,005";
 
-            GeneratePointsCommand = new AsyncCommand(OnGeneratePoints);
+            GeneratePointsCommand = new DelegateCommand(OnGeneratePoints);
             ClassifyRandomPointCommand = new AsyncCommand(OnClassifyRandomPoints, CanClassify);
-            ClassifyLogisticRegressionCommand = new AsyncCommand(OnClassifyLogisticRegression, CanClassify);
+            ClassifyLogisticRegressionCommand = new DelegateCommand(OnClassifyLogisticRegression, CanClassify);
         }
 
         private Class FirstClass { get; set; }
@@ -91,79 +92,78 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                            });
         }
 
-        private async Task OnClassifyLogisticRegression()
-        {
-            await Task.Run(() =>
-                           {
-                               var logisticRegression = new LogisticRegression(FirstClass, SecondClass);
-
-                               var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
-                               var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
-
-                               var logisticRegressionProbabilityResult = logisticRegression.Run(new[] {randomPointX, randomPointY});
-
-                               if (logisticRegressionProbabilityResult > 0.5)
-                               {
-                                   FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
-                               }
-                               else
-                               {
-                                   SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
-                               }
-
-                               PlotModel.InvalidatePlot(true);
-                           });
-        }
-
-        private async Task OnGeneratePoints()
+        private void OnClassifyLogisticRegression()
         {
             try
             {
-            await Task.Run(() =>
-                           {
-                               const int countOfPoints = 500;
+                var logisticRegression = new LogisticRegression(FirstClass, SecondClass);
 
-                               if (FirstClassScatterSeries.Points.Count != 0)
-                               {
-                                   FirstClassScatterSeries.Points.Clear();
-                               }
+                var randomPointX = random.NextDouble() * (PlotModel.Axes[0].Maximum - PlotModel.Axes[0].Minimum) + PlotModel.Axes[0].Minimum;
+                var randomPointY = random.NextDouble() * (PlotModel.Axes[1].Maximum - PlotModel.Axes[1].Minimum) + PlotModel.Axes[1].Minimum;
 
-                               if (SecondClassScatterSeries.Points.Count != 0)
-                               {
-                                   SecondClassScatterSeries.Points.Clear();
-                               }
+                var logisticRegressionProbabilityResult = logisticRegression.Run(new[] { randomPointX, randomPointY });
 
-                               var generator = new Generator();
+                if (logisticRegressionProbabilityResult > 0.5)
+                {
+                    FirstClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                }
+                else
+                {
+                    SecondClassScatterSeries.Points.Add(new ScatterPoint(randomPointX, randomPointY, 4, double.NaN, FirstClass.Id));
+                }
 
-                               var firstClassGenerateTask = Task.Run(() =>
-                                                                     {
-                                                                         FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix);
-                                                                         for (var i = 0; i < countOfPoints; i++)
-                                                                         {
-                                                                             var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
-                                                                                                             FirstClass.Vector[i, 1]);
-                                                                             FirstClassScatterSeries.Points.Add(newPoint);
-                                                                         }
-                                                                     });
-
-                               var secondClassGenerateTask = Task.Run(() =>
-                                                                      {
-                                                                          SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix);
-                                                                          for (var i = 0; i < countOfPoints; i++)
-                                                                          {
-                                                                              var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
-                                                                                                              SecondClass.Vector[i, 1]);
-                                                                              SecondClassScatterSeries.Points.Add(newPoint);
-                                                                          }
-                                                                      });
-
-                               Task.WaitAll(firstClassGenerateTask, secondClassGenerateTask);
-                               PlotModel.InvalidatePlot(true);
-                           });
+                PlotModel.InvalidatePlot(true);
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.InnerException?.Message ?? e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnGeneratePoints()
+        {
+            try
+            {
+                const int countOfPoints = 500;
+
+                if (FirstClassScatterSeries.Points.Count != 0)
+                {
+                    FirstClassScatterSeries.Points.Clear();
+                }
+
+                if (SecondClassScatterSeries.Points.Count != 0)
+                {
+                    SecondClassScatterSeries.Points.Clear();
+                }
+
+                var generator = new Generator();
+
+                Parallel.Invoke(() =>
+                                {
+                                    FirstClass = generator.GenerateClassByGaussian(countOfPoints, FirstClassExpectationX, FirstClassExpectationY, CorrelationMatrix);
+                                    for (var i = 0; i < countOfPoints; i++)
+                                    {
+                                        var newPoint = new ScatterPoint(FirstClass.Vector[i, 0],
+                                                                        FirstClass.Vector[i, 1]);
+                                        FirstClassScatterSeries.Points.Add(newPoint);
+                                    }
+                                },
+                                () =>
+                                {
+                                    SecondClass = generator.GenerateClassByGaussian(countOfPoints, SecondClassExpectationX, SecondClassExpectationY, CorrelationMatrix);
+                                    for (var i = 0; i < countOfPoints; i++)
+                                    {
+                                        var newPoint = new ScatterPoint(SecondClass.Vector[i, 0],
+                                                                        SecondClass.Vector[i, 1]);
+                                        SecondClassScatterSeries.Points.Add(newPoint);
+                                    }
+                                });
+
+                PlotModel.InvalidatePlot(true);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
