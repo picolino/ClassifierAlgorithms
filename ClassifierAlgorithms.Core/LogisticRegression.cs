@@ -20,11 +20,11 @@ namespace ClassifierAlgorithms.Core
             this.secondClass = secondClass;
         }
 
-        public void Train()
+        public void Train(double minError)
         {
             var averageError = double.MaxValue;
 
-            while (Math.Abs(averageError) > 0.000018)
+            while (Math.Abs(averageError) > minError)
             {
                 averageError = 0d;
 
@@ -33,11 +33,13 @@ namespace ClassifierAlgorithms.Core
                     var x = firstCLass.Vector[i, 0];
                     var y = firstCLass.Vector[i, 1];
 
-                    var error = 1 - Classify(x, y);
-                    zeroCoefficient += trainSpeed * error;
-                    firstCoefficient += trainSpeed * error * x;
-                    secondCoefficient += trainSpeed * error * y;
+                    var result = Classify(x, y);
+                    var error = Math.Pow((result - 1) * x + ((result - 1) * y), 2) / 2;
                     averageError += error;
+
+                    zeroCoefficient -= trainSpeed * (result - 1);
+                    firstCoefficient -= trainSpeed * (result - 1) * x;
+                    secondCoefficient -= trainSpeed * (result - 1) * y;
                 }
 
                 for (var i = 0; i < secondClass.Vector.GetLength(0); i++)
@@ -45,11 +47,13 @@ namespace ClassifierAlgorithms.Core
                     var x = secondClass.Vector[i, 0];
                     var y = secondClass.Vector[i, 1];
 
-                    var error = - Classify(x, y);
-                    zeroCoefficient += trainSpeed * error;
-                    firstCoefficient += trainSpeed * error * x;
-                    secondCoefficient += trainSpeed * error * y;
+                    var result = Classify(x, y);
+                    var error = Math.Pow((result) * x + ((result) * y), 2) / 2; ;
                     averageError += error;
+                    
+                    zeroCoefficient -= trainSpeed * result;
+                    firstCoefficient -= trainSpeed * (result) * x;
+                    secondCoefficient -= trainSpeed * (result) * y;
                 }
 
                 averageError /= firstCLass.Vector.GetLength(0) + secondClass.Vector.GetLength(0);
@@ -64,7 +68,8 @@ namespace ClassifierAlgorithms.Core
         public double Classify(double x, double y)
         {
             var chanceDifference = Math.Exp(CalculateBorderFunction(x, y));
-            return chanceDifference / (1 + chanceDifference);
+            var classifyResult = chanceDifference / (1 + chanceDifference);
+            return classifyResult;
         }
     }
 }
