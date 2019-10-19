@@ -60,6 +60,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WannEx.Core.HighPerformance">
+      <HintPath>..\..\WannEx\WannEx.Core.HighPerformance\bin\Debug\netstandard2.0\WannEx.Core.HighPerformance.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

@@ -11,6 +11,7 @@ using DevExpress.Mvvm;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using WannEx.Core.HighPerformance.Evolve.Genetic;
 
 #endregion
 
@@ -23,6 +24,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
         public ICommand GeneratePointsCommand { get; }
         public ICommand ClassifyBayesCommand { get; }
         public ICommand ClassifyLogisticRegressionCommand { get; }
+        public ICommand ClassifyWannCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -40,6 +42,7 @@ namespace ClassifierAlgorithms.GUI.ViewModel
             GeneratePointsCommand = new DelegateCommand(OnGeneratePoints);
             ClassifyBayesCommand = new AsyncCommand(OnClassifyBayes, CanClassify);
             ClassifyLogisticRegressionCommand = new AsyncCommand(OnClassifyLogisticRegression, CanClassify);
+            ClassifyWannCommand = new AsyncCommand(OnClassifyWann, CanClassify);
         }
 
         private Class FirstClass { get; set; }
@@ -129,6 +132,65 @@ namespace ClassifierAlgorithms.GUI.ViewModel
                                });
 
                 PlotModel.InvalidatePlot(true);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task OnClassifyWann()
+        {
+            try
+            {
+                var trainer = new NeatTrainer();
+                var unitedArray = new double[FirstClass.Vector.GetLength(0) + SecondClass.Vector.GetLength(0), 3];
+
+                var counter = 0;
+
+                for (var i = 0; i < FirstClass.Vector.GetLength(0); i++)
+                {
+                    unitedArray[counter, 0] = FirstClass.Vector[i, 0];
+                    unitedArray[counter, 1] = FirstClass.Vector[i, 1];
+                    unitedArray[counter, 2] = 0;
+                    counter++;
+                }
+
+                for (var i = 0; i < SecondClass.Vector.GetLength(0); i++)
+                {
+                    unitedArray[counter, 0] = SecondClass.Vector[i, 0];
+                    unitedArray[counter, 1] = SecondClass.Vector[i, 1];
+                    unitedArray[counter, 2] = 1;
+                    counter++;
+                }
+
+                var index = 0;
+                while (index < unitedArray.GetLength(0))
+                {
+                    var selectedIndexFrom = random.Next(unitedArray.GetLength(0));
+                    var x1 = unitedArray[index, 0];
+                    var x2 = unitedArray[index, 1];
+                    var cls = unitedArray[index, 2];
+                    unitedArray[index, 0] = unitedArray[selectedIndexFrom, 0];
+                    unitedArray[index, 1] = unitedArray[selectedIndexFrom, 1];
+                    unitedArray[index, 2] = unitedArray[selectedIndexFrom, 2];
+                    unitedArray[selectedIndexFrom, 0] = x1;
+                    unitedArray[selectedIndexFrom, 1] = x2;
+                    unitedArray[selectedIndexFrom, 2] = cls;
+                    index++;
+                }
+
+                var trainInput = new double[unitedArray.GetLength(0) / 2][];
+                var trainExpected = new double[unitedArray.GetLength(0) / 2][];
+
+                for (var i = 0; i < trainInput.GetLength(0); i++)
+                {
+                    trainInput[i] = new[] { unitedArray[i, 0], unitedArray[i, 1] };
+                    trainExpected[i] = new[] { unitedArray[i, 2] };
+                }
+
+                var weights = new[] { -2.0, -1.0, -0.5, 0.5, 1.0, 2.0 };
+                trainer.Train(trainInput, trainExpected, weights, 0.1);
             }
             catch (Exception e)
             {

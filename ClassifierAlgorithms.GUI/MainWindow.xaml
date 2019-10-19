@@ -154,6 +154,7 @@
                         Command="{Binding GeneratePointsCommand}"/>
                 <Button Grid.Row="2" Grid.Column="0" Content="Классифицировать байесовским классификатором" Command="{Binding ClassifyBayesCommand}"/>
                 <Button Grid.Row="4" Grid.Column="0" Content="Классифицировать логистической регрессией" Command="{Binding ClassifyLogisticRegressionCommand}"/>
+                <Button Grid.Row="4" Grid.Column="0" Content="Классифицировать нечувствительной к весам нейронной сетью" Command="{Binding ClassifyWannCommand}"/>
             </Grid>
         </Grid>
 
